@@ -1,0 +1,856 @@
+   <!--  https://share.gemini.google/doaqUJVhQtwR-->
+   <!--  https://github.com/sigalga52-dot/statistics-2/new/main-->
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תרגול סטטיסטיקה מתקדם</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f0fdf4; /* צבע רקע ירקרק בהיר ונעים */
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: white;
+        }
+
+        .data-table th, .data-table td {
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .data-table td.empty-cell {
+            background-color: #f1f5f9;
+        }
+
+        input[type="number"], input[type="text"] {
+            border: 2px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            width: 100%;
+            max-width: 150px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .feedback {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s;
+        }
+
+        .feedback-success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .feedback-hint {
+            background-color: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fef08a;
+        }
+
+        .feedback-solution {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #22c55e;
+            transition: width 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            z-index: 1000;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+        
+        .part-container {
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #f8fafc;
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Bar chart styling */
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            height: 250px;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            margin: 2rem 0;
+            padding-left: 10px;
+            position: relative;
+            max-width: 400px;
+        }
+        .bar {
+            width: 40px;
+            background-color: #3b82f6;
+            margin: 0 10px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+        }
+        .y-axis {
+            position: absolute;
+            left: -30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+        }
+        .y-tick {
+            font-size: 0.8rem;
+            line-height: 0;
+        }
+        .y-axis-label {
+            position: absolute;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-weight: bold;
+        }
+        .x-axis-label {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- מסך פתיחה לקבלת שם -->
+    <div id="welcome-screen" class="max-w-md mx-auto mt-20 p-8 question-card text-center animate-fade-in">
+        <h1 class="text-3xl font-bold text-slate-800 mb-6">ברוכים הבאים לתרגול בסטטיסטיקה!</h1>
+        <p class="text-lg text-slate-600 mb-6">כדי שנוכל להתחיל, איך קוראים לך?</p>
+        <input type="text" id="student-name-input" class="w-full text-center text-xl mb-2 p-3" placeholder="השם שלך כאן...">
+        <p id="name-error" class="text-red-500 text-sm mb-4 hidden">אנא הכנס/י את שמך כדי להתחיל.</p>
+        <button onclick="startApp()" class="btn btn-primary text-lg px-8 py-3 w-full">בואו נתחיל!</button>
+    </div>
+
+    <!-- האפליקציה המרכזית -->
+    <div id="main-app" class="max-w-4xl mx-auto hidden">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">תרגול סטטיסטיקה - <span id="student-name-display"></span></h1>
+            <p class="text-slate-600 mb-6">פתרו את השאלות לפי הסדר. צריכים עזרה? אל תדאגו, יש רמזים!</p>
+            
+            <div class="flex items-center justify-between text-sm font-semibold text-slate-500 mb-2">
+                <span>שאלה <span id="current-q-num">1</span> מתוך 7</span>
+                <span id="progress-text">0% הושלמו</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </header>
+
+        <main id="app-container">
+            <!-- התוכן יוזרק לכאן באמצעות JavaScript -->
+        </main>
+        
+        <!-- מסך סיום -->
+        <div id="completion-screen" class="hidden question-card p-8 text-center animate-fade-in">
+            <h2 id="completion-title" class="text-3xl font-bold text-green-600 mb-4"></h2>
+            <p id="completion-message" class="text-xl text-slate-700 mb-6"></p>
+            
+            <div id="retry-section" class="hidden mt-8 p-6 bg-slate-50 rounded-lg border border-slate-200">
+                <p class="text-lg mb-4 font-medium text-slate-800">האם תרצה/י לתרגל שאלות דומות לאלו שהיו בהן טעויות כדי להצליח במבחן?</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="generateRetryQuestions()" class="btn btn-primary text-lg">כן, אני רוצה להצליח במבחן!</button>
+                    <button onclick="location.reload()" class="btn btn-secondary text-lg">לא, סיימתי להיום</button>
+                </div>
+            </div>
+            
+            <button id="finish-btn" onclick="location.reload()" class="btn btn-primary text-lg mt-6 hidden">חזרה להתחלה</button>
+        </div>
+    </div>
+
+    <script>
+        // מבנה הנתונים של השאלות
+        const originalQuestionsData = [
+            {
+                id: 1,
+                title: "שאלה 1: התפלגות מכירות מכוניות",
+                context: `
+                    דני התבונן בלוח המכירות של סוכנות רכב וראה שנמכרו בו 35 רכבים.
+                    בטבלה שלפניכם מתוארת התפלגות המכירות לפי החברה המייצרת את הרכב:
+                    
+                    <table class="data-table">
+                        <tr>
+                            <th>חברת יצרן</th>
+                            <th>טויטה</th>
+                            <th>מאזדה</th>
+                            <th>יונדאי</th>
+                            <th>סובארו</th>
+                        </tr>
+                        <tr>
+                            <th>כמות רכבים</th>
+                            <td>8</td>
+                            <td>7</td>
+                            <td class="empty-cell">?</td>
+                            <td class="empty-cell">?</td>
+                        </tr>
+                    </table>
+                    
+                    נתון כי מספר הרכבים מתוצרת יונדאי גדול פי 3 ממספר הרכבים מתוצרת סובארו שנמכרו.
+                `,
+                parts: [
+                    {
+                        question: "א. מצאו כמה רכבים מתוצרת יונדאי וכמה רכבים מתוצרת סובארו נמכרו.",
+                        type: "multi-input",
+                        inputs: [
+                            { label: "יונדאי:", id: "q1_a_hyundai", correctAnswer: "15" },
+                            { label: "סובארו:", id: "q1_a_subaru", correctAnswer: "5" }
+                        ],
+                        hint: "סך כל הרכבים הוא 35. חשבו כמה רכבים נשארו ליונדאי וסובארו יחד (35 פחות 8 ו-7). נסמן את מספר רכבי הסובארו ב-x. לכן יונדאי הם 3x. המשוואה: x + 3x = השארית.",
+                        solution: "סך הרכבים הוא 35. טויוטה ומאזדה הם יחד 8+7=15. לכן נשארו 35-15=20 רכבים ליונדאי וסובארו.<br>נסמן סובארו ב-x, לכן יונדאי הם 3x.<br>המשוואה: x + 3x = 20<br>4x = 20<br>x = 5.<br>לכן: סובארו = 5, יונדאי = 3*5 = 15."
+                    },
+                    {
+                        question: "ב. (1) האם רוב הרכבים שנמכרו הם מתוצרת יפן? (הניחו כי טויוטה, מאזדה וסובארו הן חברות יפניות). כתבו 'כן' או 'לא'.",
+                        type: "single-input",
+                        inputId: "q1_b1",
+                        correctAnswer: "כן",
+                        hint: "חברו את מספר הרכבים של טויוטה, מאזדה וסובארו ובדקו האם הסכום גדול ממחצית מסך הרכבים (שהוא 35).",
+                        solution: "מספר הרכבים היפניים הוא: 8 (טויוטה) + 7 (מאזדה) + 5 (סובארו) = 20. מכיוון ש-20 גדול מ-17.5 (חצי מ-35), התשובה היא כן."
+                    },
+                    {
+                        question: "ב. (2) מה השכיחות היחסית (בשבר פשוט) של הרכבים מתוצרת יפן?",
+                        type: "single-input",
+                        inputId: "q1_b2",
+                        correctAnswer: "20/35",
+                        acceptedAnswers: ["4/7", "20/35", "35/20", "7/4"],
+                        hint: "השכיחות היחסית היא מספר הרכבים היפניים חלקי סך כל הרכבים.",
+                        solution: "מצאנו בסעיף הקודם שיש 20 רכבים יפניים. סך הרכבים הוא 35. לכן השכיחות היחסית היא 20/35 (שניתן לצמצם ל-4/7)."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "שאלה 2: חגורות בקורס ג'ודו",
+                context: `
+                    החגורות בחוג ג'ודו לילדים הן לפי צבעים: צהוב, כתום, ירוק וכחול.
+                    סדר החגורות מתחיל מצהוב (מתחילים), ומתקדם: כתום, ירוק, ולבסוף כחול (מתקדמים).
+                    
+                    <table class="data-table">
+                        <tr>
+                            <th>צבע החגורה</th>
+                            <th>צהוב</th>
+                            <th>כתום</th>
+                            <th>ירוק</th>
+                            <th>כחול</th>
+                        </tr>
+                        <tr>
+                            <th>מספר ילדים</th>
+                            <td>10</td>
+                            <td>20</td>
+                            <td class="empty-cell">?</td>
+                            <td>5</td>
+                        </tr>
+                    </table>
+                    
+                    לפניכם התפלגות צבעי החגורות של הילדים בחוג: השכיחות היחסית של בעלי חגורה כתומה היא 0.4.
+                `,
+                parts: [
+                    {
+                        question: "א. חשבו את מספר הילדים הכולל בחוג.",
+                        type: "single-input",
+                        inputId: "q2_a",
+                        correctAnswer: "50",
+                        hint: "השכיחות היחסית מחושבת על ידי: (מספר הילדים עם חגורה כתומה) לחלק ב-(סך כל הילדים). ידוע שיש 20 ילדים עם חגורה כתומה וזה שווה ל-0.4. דרך נוספת היא בעזרת ערך משולש: אם 20 ילדים מהווים 0.4 (או 40%), כמה ילדים יהוו 1 (או 100%)?",
+                        solution: "נפתור בעזרת ערך משולש (פרופורציה):<br>נרשום את השכיחות היחסית באחוזים: 0.4 שווים ל-40%.<br>20 ילדים = 40%<br>x ילדים (סה\"כ) = 100%<br>החישוב בערך משולש הוא: (20 * 100) / 40 = 2000 / 40 = 50 ילדים."
+                    },
+                    {
+                        question: "ב. חשבו את מספר הילדים בעלי חגורה ירוקה.",
+                        type: "single-input",
+                        inputId: "q2_b",
+                        correctAnswer: "15",
+                        hint: "עכשיו שאתם יודעים את סך הכל הילדים, החסירו ממנו את הילדים בעלי חגורות צהובה, כתומה וכחולה.",
+                        solution: "סך הכל ילדים: 50.<br>ילדים עם חגורות אחרות: 10 (צהוב) + 20 (כתום) + 5 (כחול) = 35.<br>לכן, מספר הילדים עם חגורה ירוקה: 50 - 35 = 15."
+                    },
+                    {
+                        question: "ג. ביום חמישי נערך טקס ובו שלושה מהילדים בעלי חגורה כתומה עלו רמה וקיבלו חגורה ירוקה. המדריך טוען כי השכיחות היחסית של ילדים עם חגורה כחולה לא השתנתה. האם הוא צודק? (כן/לא)",
+                        type: "single-input",
+                        inputId: "q2_c",
+                        correctAnswer: "כן",
+                        hint: "האם מספר הילדים הכולל בחוג השתנה? האם מספר הילדים בעלי החגורה הכחולה השתנה?",
+                        solution: "כן. סך כל הילדים נשאר 50. מספר הילדים עם חגורה כחולה נשאר 5. לכן השכיחות היחסית שלהם נשארה 5/50, ולא השתנתה."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "שאלה 3: מציאת נעלם לפי ממוצע",
+                context: `
+                    נתונה התפלגות ציונים במדעים בכיתה ט'3. ממוצע הציונים הוא 7.85.
+                    
+                    <table class="data-table">
+                        <tr>
+                            <th>ציון</th>
+                            <th>10</th>
+                            <th>9</th>
+                            <th>8</th>
+                            <th>7</th>
+                            <th>6</th>
+                        </tr>
+                        <tr>
+                            <th>מספר תלמידים</th>
+                            <td>2</td>
+                            <td>4</td>
+                            <td>6</td>
+                            <td>x</td>
+                            <td>3</td>
+                        </tr>
+                    </table>
+                `,
+                parts: [
+                    {
+                        question: "מהו הערך של x?",
+                        type: "single-input",
+                        inputId: "q3_a",
+                        correctAnswer: "5",
+                        hint: "נוסחת הממוצע היא: סכום (ציון * מספר תלמידים) לחלק לסך כל התלמידים. השוו את המשוואה ל-7.85.",
+                        solution: "סכום הציונים: (10*2) + (9*4) + (8*6) + (7*x) + (6*3) = 20 + 36 + 48 + 7x + 18 = 122 + 7x.<br>סך התלמידים: 2+4+6+x+3 = 15 + x.<br>המשוואה: (122 + 7x) / (15 + x) = 7.85<br>122 + 7x = 7.85*(15 + x)<br>122 + 7x = 117.75 + 7.85x<br>4.25 = 0.85x<br>x = 5." 
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "שאלה 4: שינויים בממוצע הציונים",
+                context: `
+                    במבחן בהיסטוריה שנערך בכיתה התקבלו הציונים הבאים:
+                    10 תלמידים קיבלו ציון 90, 8 תלמידים קיבלו ציון 80, 5 תלמידים קיבלו ציון 70, ו-2 תלמידים קיבלו ציון 100.
+                `,
+                parts: [
+                    {
+                        question: "א. מה הוא ממוצע הציונים הכיתתי?",
+                        type: "single-input",
+                        inputId: "q4_a",
+                        correctAnswer: "83.6",
+                        hint: "הכפילו כל ציון במספר התלמידים שקיבלו אותו, חברו את התוצאות וחלקו במספר התלמידים הכולל.",
+                        solution: "סכום הציונים: (10*90) + (8*80) + (5*70) + (2*100) = 900 + 640 + 350 + 200 = 2090.<br>מספר תלמידים: 10 + 8 + 5 + 2 = 25.<br>ממוצע: 2090 / 25 = 83.6."
+                    },
+                    {
+                        question: "ב. שבוע לאחר מכן נבחנו עוד 5 תלמידים וכולם קיבלו ציון 85.<br>האם הממוצע החדש גדל, קטן או נשאר ללא שינוי בהשוואה לממוצע הקודם? (כתבו: גדל / קטן / ללא שינוי)",
+                        type: "single-input",
+                        inputId: "q4_b",
+                        correctAnswer: "גדל",
+                        hint: "השוו את הציון שהתלמידים החדשים קיבלו (85) לממוצע הישן (83.6). אם הציון החדש גבוה מהממוצע, מה קורה לממוצע הכולל?",
+                        solution: "התלמידים החדשים קיבלו ציון 85, שהוא גבוה מהממוצע הקודם (83.6). הוספת ציונים שגבוהים מהממוצע, תמיד תעלה את הממוצע החדש. לכן הממוצע גדל. (אפשר גם לחשב: (2090 + 5*85) / 30 = 2515 / 30 = 83.83)."
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "שאלה 5: קריאת דיאגרמת עמודות",
+                context: `
+                    בדיאגרמת העמודות שלפניכם מתוארת התפלגות הציונים במבחן בגיאוגרפיה שנערך בכיתה ח'.
+                    
+                    <div class="chart-container">
+                        <div class="y-axis-label">מספר תלמידים (שכיחות)</div>
+                        <div class="y-axis">
+                            <div class="y-tick">10 -</div>
+                            <div class="y-tick">8 -</div>
+                            <div class="y-tick">6 -</div>
+                            <div class="y-tick">4 -</div>
+                            <div class="y-tick">2 -</div>
+                            <div class="y-tick">0 -</div>
+                        </div>
+                        
+                        <div class="bar" style="height: 30%;"><div class="bar-label">65</div></div> <!-- 3 students -->
+                        <div class="bar" style="height: 60%;"><div class="bar-label">75</div></div> <!-- 6 students -->
+                        <div class="bar" style="height: 90%;"><div class="bar-label">85</div></div> <!-- 9 students -->
+                        <div class="bar" style="height: 50%;"><div class="bar-label">95</div></div> <!-- 5 students -->
+                    </div>
+                    <div class="x-axis-label">ציון</div>
+                `,
+                parts: [
+                    {
+                        question: "א. מהו מספר התלמידים בכיתה?",
+                        type: "single-input",
+                        inputId: "q5_a",
+                        correctAnswer: "23",
+                        hint: "קראו את הגובה של כל עמודה (לפי ציר ה-Y המייצג שכיחות) וחברו את הנתונים יחד.",
+                        solution: "לפי הדיאגרמה: 3 קיבלו 65, 6 קיבלו 75, 9 קיבלו 85, ו-5 קיבלו 95.<br>סה\"כ: 3 + 6 + 9 + 5 = 23 תלמידים."
+                    },
+                    {
+                        question: "ב. מהו הציון הממוצע? (עגלו ל-2 ספרות אחרי הנקודה העשרונית)",
+                        type: "single-input",
+                        inputId: "q5_b",
+                        correctAnswer: "81.96",
+                        acceptedAnswers: ["81.95", "82"],
+                        hint: "כמו בטבלת שכיחויות: הכפילו כל ציון במספר התלמידים (גובה העמודה), סכמו וחלקו במספר התלמידים הכולל (שמצאתם בסעיף א').",
+                        solution: "סכום הציונים: (65*3) + (75*6) + (85*9) + (95*5) = 195 + 450 + 765 + 475 = 1885.<br>ממוצע: 1885 / 23 = 81.956... ולכן נעגל ל-81.96."
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "שאלה 6: ממוצע משכורות במפעל",
+                context: `
+                    במפעל הייטק 3 דרגות שכר: למהנדסים בכירים 20,000 ₪, למתכנתים 15,000 ₪, ולבודקי תוכנה (QA) 10,000 ₪.
+                    השכר הממוצע במפעל הוא 13,500 ₪.
+                    במפעל ישנם 10 מהנדסים בכירים ובסך הכל ישנם 100 עובדים (כולל המהנדסים).
+                `,
+                parts: [
+                    {
+                        question: "כמה מתכנתים וכמה בודקי תוכנה עובדים במפעל?",
+                        type: "multi-input",
+                        inputs: [
+                            { label: "מתכנתים:", id: "q6_devs", correctAnswer: "50" },
+                            { label: "בודקי תוכנה:", id: "q6_qa", correctAnswer: "40" }
+                        ],
+                        hint: "אם יש 100 עובדים ו-10 מהם מהנדסים, נשארו 90 מתכנתים ובודקים. סמנו את מספר המתכנתים ב-x, ומכאן שמספר הבודקים הוא (90 פחות x). הרכיבו משוואה של ממוצע.",
+                        solution: "סה\"כ עובדים = 100. מהנדסים = 10. לכן מתכנתים + בודקים = 90.<br>נסמן מתכנתים ב-x, בודקים ב- 90-x.<br>סכום המשכורות: 10*20000 + x*15000 + (90-x)*10000.<br>המשוואה לממוצע: [200000 + 15000x + 900000 - 10000x] / 100 = 13500.<br>1100000 + 5000x = 1350000<br>5000x = 250000<br>x = 50.<br>לכן: יש 50 מתכנתים ו-40 בודקי תוכנה."
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "שאלה 7: בית קפה - שכר ממוצע וחציוני",
+                context: `
+                    במסעדה גדולה מועסקים 40 מלצרים, 10 אחמ"שים ו-2 מנהלים.
+                    שכרו של מלצר הוא: 7000 ₪.
+                    שכרו של אחמ"ש הוא: 11000 ₪.
+                    שכרו של מנהל הוא: 18000 ₪.
+                `,
+                parts: [
+                    {
+                        question: "א. מצאו את השכר השכיח, ואת השכר הממוצע במסעדה.",
+                        type: "multi-input",
+                        inputs: [
+                            { label: "שכר שכיח:", id: "q7_a_mode", correctAnswer: "7000" },
+                            { label: "שכר ממוצע:", id: "q7_a_mean", correctAnswer: "8192.3" }
+                        ],
+                        hint: "השכר השכיח הוא זה שמופיע הכי הרבה פעמים. לממוצע, הכפילו כל שכר במספר העובדים שמקבלים אותו וחלקו בסך העובדים (52).",
+                        solution: "שכיח: הרוב המוחלט הם מלצרים (40), ולכן השכר השכיח הוא 7000.<br>ממוצע: סכום השכר = (40*7000) + (10*11000) + (2*18000) = 280000 + 110000 + 36000 = 426000.<br>מספר עובדים: 52.<br>ממוצע = 426000 / 52 = 8192.3 ₪."
+                    },
+                    {
+                        question: "ב. כיצד ישתנה הממוצע שחישבתם, אם 2 המנהלים יקבלו תוספת שכר של 2600 ₪ כל אחד? (בכמה יעלה הממוצע הכולל?)",
+                        type: "single-input",
+                        inputId: "q7_b",
+                        correctAnswer: "100",
+                        hint: "סך כל הכסף שנוסף לתקציב המסעדה הוא 2 פעמים 2600. איך התוספת הזו מתחלקת בין כלל 52 העובדים (כדי למצוא את השינוי בממוצע)?",
+                        solution: "התוספת הכוללת לתקציב השכר היא: 2 * 2600 = 5200 ₪.<br>כדי לדעת בכמה עלה הממוצע, נחלק את התוספת הכוללת למספר העובדים הכולל: 5200 / 52 = 100 ₪.<br>הממוצע יעלה ב-100 ₪."
+                    }
+                ]
+            }
+        ];
+
+        // משתני מצב
+        let questionsData = JSON.parse(JSON.stringify(originalQuestionsData));
+        let currentQuestionIndex = 0;
+        let userAttempts = {}; 
+        let questionErrors = {}; // מעקב אחר טעויות ברמת השאלה שלמה
+        let studentName = "";
+        let isRetryMode = false;
+
+        function startApp() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (nameInput) {
+                studentName = nameInput;
+                document.getElementById('name-error').classList.add('hidden');
+                document.getElementById('student-name-display').innerText = studentName;
+                document.getElementById('welcome-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                
+                // אתחול מעקב טעויות לכל השאלות
+                questionsData.forEach(q => questionErrors[q.id] = false);
+                
+                initApp();
+            } else {
+                // במקום חלונית alert, נציג הודעה למשתמש
+                document.getElementById('name-error').classList.remove('hidden');
+            }
+        }
+
+        function initApp() {
+            renderQuestion(currentQuestionIndex);
+            updateProgress();
+        }
+
+        function renderQuestion(index) {
+            const container = document.getElementById('app-container');
+            const q = questionsData[index];
+            
+            let html = `
+                <div class="question-card p-6 md:p-8 animate-fade-in" id="q-card-${q.id}">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4">${q.title}</h2>
+                    <div class="text-lg text-slate-700 mb-6 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                        ${q.context}
+                    </div>
+            `;
+
+            q.parts.forEach((part, partIndex) => {
+                const partId = `q${q.id}_p${partIndex}`;
+                if (typeof userAttempts[partId] === 'undefined') {
+                    userAttempts[partId] = 0;
+                }
+
+                html += `
+                    <div class="part-container" id="container_${partId}">
+                        <p class="text-lg font-semibold text-slate-800 mb-4">${part.question}</p>
+                        <div class="flex flex-wrap gap-4 items-center">
+                `;
+
+                if (part.type === 'single-input') {
+                    html += `<input type="text" id="${part.inputId}" placeholder="תשובה..." class="mb-2">`;
+                } else if (part.type === 'multi-input') {
+                    part.inputs.forEach(inp => {
+                        html += `
+                            <div class="flex items-center gap-2 mb-2">
+                                <label for="${inp.id}" class="font-medium">${inp.label}</label>
+                                <input type="text" id="${inp.id}" placeholder="...">
+                            </div>
+                        `;
+                    });
+                }
+
+                html += `
+                            <button class="btn btn-primary ml-auto" onclick="checkAnswer(${index}, ${partIndex})" id="btn_${partId}">בדיקה</button>
+                        </div>
+                        <div id="feedback_${partId}" class="feedback hidden"></div>
+                    </div>
+                `;
+            });
+
+            // כפתור המשך לשאלה הבאה - תמיד קיים אבל מוסתר עד לסיום כל חלקי השאלה
+            html += `
+                <div id="next-container" class="mt-8 pt-6 border-t-2 border-slate-100 flex flex-col items-center justify-center hidden">
+                    <p class="mb-3 font-bold text-xl" id="next-msg"></p>
+                    <button id="next-btn" class="btn btn-primary text-xl px-10 py-4 shadow-xl shadow-blue-200 transform transition hover:scale-105 flex items-center gap-3" onclick="nextQuestion()">
+                        המשך לשאלה הבאה
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function checkAnswer(qIndex, partIndex) {
+            const q = questionsData[qIndex];
+            const part = q.parts[partIndex];
+            const partId = `q${q.id}_p${partIndex}`;
+            let isCorrect = true;
+
+            if (part.type === 'single-input') {
+                const userVal = document.getElementById(part.inputId).value.replace(/\s+/g, '');
+                const correct = part.correctAnswer.replace(/\s+/g, '');
+                const accepted = (part.acceptedAnswers || []).map(a => a.replace(/\s+/g, ''));
+                if (userVal !== correct && !accepted.includes(userVal)) isCorrect = false;
+            } else if (part.type === 'multi-input') {
+                part.inputs.forEach(inp => {
+                    const userVal = document.getElementById(inp.id).value.replace(/\s+/g, '');
+                    if (userVal !== inp.correctAnswer.replace(/\s+/g, '')) isCorrect = false;
+                });
+            }
+
+            const feedbackEl = document.getElementById(`feedback_${partId}`);
+            feedbackEl.classList.remove('hidden', 'feedback-success', 'feedback-hint', 'feedback-solution');
+            
+            if (isCorrect) {
+                feedbackEl.classList.add('feedback-success');
+                feedbackEl.innerHTML = `<strong>מעולה ${studentName}! 🌟</strong> התשובה נכונה.`;
+                disableInputs(partId, part);
+                document.getElementById(`btn_${partId}`).classList.add('hidden');
+                triggerConfetti();
+                checkIfQuestionComplete(qIndex);
+                
+            } else {
+                userAttempts[partId]++;
+                const attempts = userAttempts[partId];
+                questionErrors[q.id] = true; // רישום שהייתה טעות בשאלה הזו
+                
+                if (attempts === 1) {
+                    feedbackEl.classList.add('feedback-hint');
+                    feedbackEl.innerHTML = `<strong>כמעט ${studentName}... נסה/י שוב (או המשך לשאלה הבאה).</strong><br><em>רמז:</em> ${part.hint}`;
+                    // קוראים לפונקציה גם כאן כדי להציג את כפתור ההמשך כבר אחרי הטעות הראשונה
+                    checkIfQuestionComplete(qIndex);
+                } else {
+                    feedbackEl.classList.add('feedback-solution');
+                    feedbackEl.innerHTML = `<strong>לא נורא, הנה הפתרון המלא:</strong><br><div class="mt-2 text-md">${part.solution}</div>`;
+                    
+                    if (part.type === 'single-input') {
+                        document.getElementById(part.inputId).value = part.correctAnswer;
+                    } else if (part.type === 'multi-input') {
+                        part.inputs.forEach(inp => {
+                            document.getElementById(inp.id).value = inp.correctAnswer;
+                        });
+                    }
+                    disableInputs(partId, part);
+                    document.getElementById(`btn_${partId}`).classList.add('hidden');
+                    checkIfQuestionComplete(qIndex);
+                }
+            }
+        }
+
+        function disableInputs(partId, part) {
+            if (part.type === 'single-input') {
+                const el = document.getElementById(part.inputId);
+                el.disabled = true;
+                el.classList.add('bg-slate-100', 'text-slate-500', 'border-slate-300');
+            } else if (part.type === 'multi-input') {
+                part.inputs.forEach(inp => {
+                    const el = document.getElementById(inp.id);
+                    el.disabled = true;
+                    el.classList.add('bg-slate-100', 'text-slate-500', 'border-slate-300');
+                });
+            }
+        }
+
+        function checkIfQuestionComplete(qIndex) {
+            const q = questionsData[qIndex];
+            let allComplete = true;
+            
+            q.parts.forEach((part, partIndex) => {
+                const partId = `q${q.id}_p${partIndex}`;
+                const btn = document.getElementById(`btn_${partId}`);
+                // השאלה נחשבת כהושלמה אם ענו עליה נכון (הכפתור הוסתר) או שכבר בוצע ניסיון מענה (ואז מאפשרים להמשיך)
+                if (!btn.classList.contains('hidden') && (!userAttempts[partId] || userAttempts[partId] === 0)) {
+                    allComplete = false;
+                }
+            });
+
+            if (allComplete) {
+                const nextContainer = document.getElementById('next-container');
+                nextContainer.classList.remove('hidden');
+                nextContainer.classList.add('animate-fade-in');
+                
+                const nextMsg = document.getElementById('next-msg');
+                const nextBtn = document.getElementById('next-btn');
+                
+                // בדיקת הודעת משוב לשאלה עצמה
+                if (questionErrors[q.id]) {
+                    nextMsg.innerText = `סיימת את השאלה, ${studentName}.`;
+                    nextMsg.className = "mb-3 font-medium text-lg text-slate-500";
+                } else {
+                    const praises = [
+                        `פתרת את השאלה מהמם, ${studentName}! 🌟`,
+                        `אלופ/ה אמיתי/ת, ${studentName}! 💪`,
+                        `עבודה מושלמת, ${studentName}! 🎯`,
+                        `פשוט גאונות, ${studentName}! ✨`
+                    ];
+                    nextMsg.innerText = praises[Math.floor(Math.random() * praises.length)];
+                    nextMsg.className = "mb-3 font-bold text-xl text-green-600";
+                }
+                
+                if (qIndex === questionsData.length - 1) {
+                    nextBtn.innerHTML = "סיים תרגול 🏆";
+                }
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            updateProgress();
+            
+            if (currentQuestionIndex < questionsData.length) {
+                renderQuestion(currentQuestionIndex);
+            } else {
+                showCompletionScreen();
+            }
+        }
+
+        function showCompletionScreen() {
+            document.getElementById('app-container').classList.add('hidden');
+            const compScreen = document.getElementById('completion-screen');
+            compScreen.classList.remove('hidden');
+            
+            const title = document.getElementById('completion-title');
+            const msg = document.getElementById('completion-message');
+            const retrySection = document.getElementById('retry-section');
+            const finishBtn = document.getElementById('finish-btn');
+            
+            let hasErrors = false;
+            questionsData.forEach(q => {
+                if (questionErrors[q.id]) hasErrors = true;
+            });
+
+            if (isRetryMode) {
+                title.innerText = `כל הכבוד ${studentName}! 🏆`;
+                msg.innerText = `סיימת את התרגול הנוסף. אנחנו בטוחים שעכשיו הכל הרבה יותר ברור!`;
+                finishBtn.classList.remove('hidden');
+                retrySection.classList.add('hidden');
+                triggerConfetti(50);
+            } else if (!hasErrors) {
+                title.innerText = `מושלם, ${studentName}! 🏆`;
+                msg.innerText = `אתה מוכן למבחן, בהצלחה!`;
+                finishBtn.classList.remove('hidden');
+                retrySection.classList.add('hidden');
+                triggerConfetti(100);
+            } else {
+                title.innerText = `כל הכבוד על המאמץ, ${studentName}! 👏`;
+                msg.innerText = `סיימת את סבב השאלות הראשון.`;
+                retrySection.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        function generateRetryQuestions() {
+            const questionsToRetry = originalQuestionsData.filter(q => questionErrors[q.id]);
+            if (questionsToRetry.length === 0) return;
+
+            questionsData = questionsToRetry.map((q, index) => {
+                let newQ = JSON.parse(JSON.stringify(q));
+                newQ.id = `retry_${q.id}`; 
+                // שימוש בשם השאלה המקורי והוספת (תרגול חוזר)
+                let titleBase = q.title.includes(': ') ? q.title.split(': ')[1] : q.title;
+                newQ.title = `שאלה ${index + 1} (תרגול חוזר): ${titleBase}`;
+                return newQ;
+            });
+
+            currentQuestionIndex = 0;
+            userAttempts = {};
+            questionErrors = {};
+            questionsData.forEach(q => questionErrors[q.id] = false);
+            isRetryMode = true;
+
+            document.getElementById('completion-screen').classList.add('hidden');
+            document.getElementById('retry-section').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            
+            initApp();
+        }
+
+        function updateProgress() {
+            const total = questionsData.length;
+            const current = currentQuestionIndex + 1;
+            
+            if (currentQuestionIndex < total) {
+                document.getElementById('current-q-num').innerText = current;
+                const percent = Math.round((currentQuestionIndex / total) * 100);
+                document.getElementById('progress-text').innerText = `${percent}% הושלמו`;
+                document.getElementById('progress-fill').style.width = `${percent}%`;
+            } else {
+                document.getElementById('progress-text').innerText = `100% הושלמו!`;
+                document.getElementById('progress-fill').style.width = `100%`;
+            }
+        }
+
+        function triggerConfetti(amount = 30) {
+            for (let i = 0; i < amount; i++) {
+                createConfettiPiece();
+            }
+        }
+
+        function createConfettiPiece() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = -10 + 'px';
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            const duration = Math.random() * 2 + 2; 
+            confetti.style.animationDuration = duration + 's';
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                if(document.body.contains(confetti)) {
+                    confetti.remove();
+                }
+            }, duration * 1000);
+        }
+
+    </script>
+</body>
+</html>
